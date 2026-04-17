@@ -1,0 +1,29 @@
+variable,label,source,count,mean,std,min,25%,50%,75%,max
+id,mcmv project id,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",3954,4602.30779,8908.234639,0,1077.25,2101.5,3107.75,58344
+data_referencia,reference date for data generation,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+cod_ibge,"6-digit code of the municipality, according to the ibge table of municipalities codes, except for the check digit","Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",3954,327797.849,96355.52283,110002,270030,320510,410565,530010
+txt_nome_municipio,name of the municipality,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+txt_sigla_uf,federation unit (uf) in which the municipality is located,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+txt_regiao,name of the geographic region in which the uf is located,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+dt_assinatura,date in which the project contract was signed (*),"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+cod_operacao,unique code identifying the enterprise in computerized systems,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",3954,37664939.6,6567282.892,16517361,31938465.75,37512389,41532901.75,61344995
+txt_nome_empreendimento,identification of the name of the contracted enterprise,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+txt_nome_agente_financeiro,identification of the name of the financial agent responsible for the contract,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+txt_modalidade,"service line where the project was contracted (rural, far, oferta pública, entidades)","Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+txt_situacao_empreendimento,"situation of housing projects (concluído, não concluído, distratado/cancelado)","Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+qtd_uh,number of housing units contracted,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",3954,333.4699039,373.1212788,4,130,256,443.75,6240
+qtd_uh_entregues,number of housing units delivered,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",3954,333.2149722,372.8319967,4,130,256,442.75,6240
+qtd_uh_vigentes,"number of housing units not delivered, minus canceled/canceled units","Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",3954,0.254931715,11.33407147,0,0,0,0,508
+qtd_uh_distratadas,number of housing units cancelled/discontinued,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",3954,0,0,0,0,0,0,0
+val_contratado_total,"total contracted value, considering supplementary values __(if applicable)","Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+val_desembolsado,total amount disbursed for the project up to the reference date,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+txt_cnpj_construtora_entidade,"cnpj of the construction company or - social entity, when applicable","Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",3952,1.91E+13,2.49E+13,42291000180,3.63E+12,8.01E+12,1.94E+13,9.78E+13
+txt_nome_construtora_entidade,"name of the construction company or - social entity, when applicable","Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+txt_endereco,"address of the enterprise, -when collected","Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+txt_cep,"cep of the enterprise, -when collected","Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",1562,46177918.18,28447151.43,3000,20211902,41817891.5,68903600.25,98807050
+year,project year,"Author generated based on Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",3954,2012.257967,2.563480612,2007,2010,2012,2013,2019
+addr2geocode,address for geocoding,"Author generated based on Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida",,,,,,,,
+city_type,city type,REGIC 2018 - Cidades,,,,,,,,
+fmtd_addr,formatted address,Google Geocoding API,,,,,,,,
+lat,latitude,Google Geocoding API,3954,-16.87965823,8.218387153,-32.0816734,-23.09819085,-19.5619625,-9.57121575,2.8549382
+lng,longitude,Google Geocoding API,3954,-46.08752146,6.218388574,-67.8918906,-49.92313265,-46.5321522,-41.78276025,-34.8305241

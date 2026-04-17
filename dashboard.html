@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MCMV Faixa 1 — Housing Projects Dashboard</title>
+  <title>MCMV Climate Resilience Tracker</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
@@ -20,14 +20,35 @@
       --shadow-md: 0 4px 14px rgba(0,0,0,0.09);
       --radius: 14px;
       --gap: 16px;
+      --table-stripe: #fafafa;
+      --table-hover: #eff6ff;
+      --toolbar-bg: #fafafa;
+      --input-bg: white;
+      --chart-grid: #f1f5f9;
+    }
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --primary: #3b82f6;
+      --primary-light: #60a5fa;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --shadow: 0 1px 4px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+      --shadow-md: 0 4px 14px rgba(0,0,0,0.4);
+      --table-stripe: #1a2740;
+      --table-hover: #1e3a5f;
+      --toolbar-bg: #1a2740;
+      --input-bg: #0f172a;
+      --chart-grid: #334155;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
-      font-size: 14px;
-      line-height: 1.5;
+      font-size: 16px;
+      line-height: 1.6;
     }
 
     /* ── Header ───────────────────────────────────────────────────────────── */
@@ -50,17 +71,79 @@
       pointer-events: none;
     }
     .header-left { position: relative; }
-    .header-left h1 { font-size: 21px; font-weight: 800; letter-spacing: -0.4px; }
-    .header-left p  { font-size: 12px; opacity: 0.62; margin-top: 3px; letter-spacing: 0.1px; }
+    .header-left h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.4px; }
+    .header-left p  { font-size: 15px; opacity: 0.62; margin-top: 3px; letter-spacing: 0.1px; }
     .header-right   { position: relative; text-align: right; }
-    .header-meta    { font-size: 11px; opacity: 0.58; line-height: 1.9; }
+    .header-meta    { font-size: 13px; opacity: 0.58; line-height: 1.9; }
     .header-pills   { display: flex; gap: 6px; margin-top: 9px; justify-content: flex-end; }
     .pill {
       background: rgba(255,255,255,0.13);
       border: 1px solid rgba(255,255,255,0.22);
       border-radius: 20px;
-      padding: 3px 12px;
-      font-size: 11px; font-weight: 500;
+      padding: 4px 14px;
+      font-size: 13px; font-weight: 500;
+    }
+
+    /* ── Dark-mode toggle ─────────────────────────────────────────────────── */
+    .theme-toggle {
+      position: relative;
+      background: rgba(255,255,255,0.13);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 13px;
+      color: white;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: background 0.2s;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.22); }
+
+    /* ── Dark-mode overrides ──────────────────────────────────────────────── */
+    [data-theme="dark"] #loading { background: rgba(15,23,42,0.97); }
+    [data-theme="dark"] #loading p { color: var(--text-muted); }
+    [data-theme="dark"] .spinner { border-color: #334155; border-top-color: var(--primary); }
+    [data-theme="dark"] .filter-group select { background-color: var(--input-bg); color: var(--text); border-color: var(--border); }
+    [data-theme="dark"] .filter-group select:focus { background: var(--card); }
+    [data-theme="dark"] thead th { background: var(--toolbar-bg); color: var(--text-muted); }
+    [data-theme="dark"] thead th:hover { background: var(--card); color: var(--text); }
+    [data-theme="dark"] tbody tr:nth-child(even) { background: var(--table-stripe); }
+    [data-theme="dark"] tbody tr:hover { background: var(--table-hover) !important; }
+    [data-theme="dark"] .table-toolbar { background: var(--toolbar-bg); }
+    [data-theme="dark"] .search-box { background-color: var(--input-bg); color: var(--text); border-color: var(--border); }
+    [data-theme="dark"] .pagination { background: var(--toolbar-bg); }
+    [data-theme="dark"] .pg-btn { background: var(--card); color: var(--text); border-color: var(--border); }
+    [data-theme="dark"] .pg-btn:hover:not(:disabled) { background: var(--input-bg); }
+    [data-theme="dark"] .map-footer { background: var(--toolbar-bg); color: var(--text-muted); }
+    [data-theme="dark"] .cri-legend { background: rgba(30,41,59,0.93); color: var(--text); }
+    [data-theme="dark"] #error-msg { background: #450a0a; border-color: #991b1b; color: #fca5a5; }
+    [data-theme="dark"] #error-msg code { background: #7f1d1d; }
+
+    /* ── Card hover effects ───────────────────────────────────────────────── */
+    .card, .panel-card, .chart-card, .table-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover, .panel-card:hover, .chart-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    /* ── Active filter indicator ───────────────────────────────────────────── */
+    .filter-active {
+      position: relative;
+    }
+    .filter-active select {
+      border-color: var(--primary-light) !important;
+      background-color: #eff6ff !important;
+    }
+    [data-theme="dark"] .filter-active select {
+      background-color: #1e3a5f !important;
+    }
+    .btn-reset-count {
+      background: white; color: var(--primary);
+      border-radius: 50%; width: 18px; height: 18px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700;
+      margin-left: 4px;
     }
 
     /* ── Loading ──────────────────────────────────────────────────────────── */
@@ -79,7 +162,7 @@
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    #loading p { margin-top: 14px; color: var(--text-muted); font-size: 14px; }
+    #loading p { margin-top: 14px; color: var(--text-muted); font-size: 16px; }
 
     /* ── Error ────────────────────────────────────────────────────────────── */
     #error-msg {
@@ -111,7 +194,7 @@
       flex-wrap: wrap;
     }
     .filter-bar-label {
-      font-size: 10px; font-weight: 700;
+      font-size: 13px; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.7px;
       color: var(--text-muted);
       white-space: nowrap; flex-shrink: 0;
@@ -120,14 +203,14 @@
     .filter-selects { display: flex; gap: 8px; flex: 1; flex-wrap: wrap; }
     .filter-group   { display: flex; flex-direction: column; gap: 3px; min-width: 110px; flex: 1; }
     .filter-group label {
-      font-size: 9px; font-weight: 700;
+      font-size: 12px; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.5px;
       color: var(--text-muted);
     }
     .filter-group select {
-      padding: 6px 24px 6px 9px;
+      padding: 8px 28px 8px 11px;
       border: 1px solid var(--border); border-radius: 7px;
-      font-size: 12px; background: #f8fafc; color: var(--text);
+      font-size: 14px; background: #f8fafc; color: var(--text);
       cursor: pointer; appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2394a3b8'/%3E%3C/svg%3E");
       background-repeat: no-repeat; background-position: right 8px center;
@@ -137,39 +220,12 @@
       box-shadow: 0 0 0 3px rgba(59,130,246,0.12); background: white;
     }
     .btn-reset {
-      padding: 7px 15px; background: var(--primary); color: white;
-      border: none; border-radius: 7px; font-size: 12px; font-weight: 600;
+      padding: 9px 18px; background: var(--primary); color: white;
+      border: none; border-radius: 7px; font-size: 14px; font-weight: 600;
       cursor: pointer; white-space: nowrap; flex-shrink: 0;
       transition: background 0.15s;
     }
     .btn-reset:hover { background: #1e40af; }
-
-    /* ── KPI cards ────────────────────────────────────────────────────────── */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: var(--gap);
-      margin-bottom: var(--gap);
-    }
-    .kpi-card {
-      border-radius: var(--radius);
-      padding: 20px 22px;
-      position: relative;
-      overflow: hidden;
-      color: white;
-      box-shadow: var(--shadow-md);
-    }
-    .kpi-card.k1 { background: linear-gradient(135deg, #1e40af, #3b82f6); }
-    .kpi-card.k2 { background: linear-gradient(135deg, #065f46, #10b981); }
-    .kpi-card.k3 { background: linear-gradient(135deg, #5b21b6, #8b5cf6); }
-    .kpi-card.k4 { background: linear-gradient(135deg, #92400e, #f59e0b); }
-    .kpi-icon {
-      position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
-      font-size: 52px; opacity: 0.18; line-height: 1; user-select: none;
-    }
-    .kpi-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; opacity: 0.82; margin-bottom: 8px; }
-    .kpi-value { font-size: 30px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
-    .kpi-sub   { font-size: 11px; opacity: 0.72; margin-top: 7px; }
 
     /* ── Main row (map + charts column) ──────────────────────────────────── */
     .main-row {
@@ -193,20 +249,20 @@
       overflow: hidden;
     }
     .card-header {
-      padding: 12px 18px;
+      padding: 14px 20px;
       border-bottom: 1px solid var(--border);
-      font-size: 13px; font-weight: 600;
+      font-size: 16px; font-weight: 600;
       display: flex; align-items: center; gap: 8px;
       color: var(--text);
     }
     .card-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .card-header-right { margin-left: auto; font-size: 11px; font-weight: 400; color: var(--text-muted); }
+    .card-header-right { margin-left: auto; font-size: 14px; font-weight: 400; color: var(--text-muted); }
 
     /* ── Map ──────────────────────────────────────────────────────────────── */
     #map { height: 600px; }
     .map-footer {
-      padding: 7px 16px; border-top: 1px solid var(--border);
-      font-size: 11px; color: var(--text-muted);
+      padding: 8px 18px; border-top: 1px solid var(--border);
+      font-size: 13px; color: var(--text-muted);
       text-align: right; background: #fafafa;
     }
 
@@ -219,12 +275,26 @@
       display: flex; flex-direction: column;
     }
     .panel-card-header {
-      font-size: 12px; font-weight: 600;
+      font-size: 15px; font-weight: 600;
       display: flex; align-items: center; gap: 7px;
       padding-bottom: 10px; margin-bottom: 14px;
       border-bottom: 1px solid var(--border);
       color: var(--text);
     }
+
+    /* ── CRI Legend ───────────────────────────────────────────────────────── */
+    .cri-legend {
+      position: absolute; bottom: 28px; left: 12px; z-index: 1000;
+      background: rgba(255,255,255,0.93); border-radius: 8px;
+      padding: 10px 14px; font-size: 13px; box-shadow: var(--shadow);
+      pointer-events: auto;
+    }
+    .cri-legend-title { font-weight: 700; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); }
+    .cri-gradient {
+      width: 120px; height: 10px; border-radius: 3px;
+      background: linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e);
+    }
+    .cri-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
     /* ── Charts row ───────────────────────────────────────────────────────── */
     .charts-row {
@@ -238,9 +308,11 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 16px;
+      min-width: 0;
+      overflow: hidden;
     }
     .chart-card-header {
-      font-size: 12px; font-weight: 600;
+      font-size: 15px; font-weight: 600;
       display: flex; align-items: center; gap: 7px;
       padding-bottom: 10px; margin-bottom: 14px;
       border-bottom: 1px solid var(--border);
@@ -258,20 +330,20 @@
       gap: 12px; flex-wrap: wrap; background: #fafafa;
     }
     .table-toolbar-left { display: flex; align-items: center; gap: 10px; }
-    .table-toolbar h3   { font-size: 13px; font-weight: 700; }
-    .table-count        { font-size: 12px; color: var(--text-muted); }
+    .table-toolbar h3   { font-size: 16px; font-weight: 700; }
+    .table-count        { font-size: 14px; color: var(--text-muted); }
     .search-box {
       padding: 7px 12px 7px 32px;
       border: 1px solid var(--border); border-radius: 7px;
-      font-size: 13px; width: 280px; color: var(--text);
+      font-size: 15px; width: 300px; color: var(--text);
       background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
     }
     .search-box:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
     .tbl-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; }
     thead th {
       padding: 9px 14px; text-align: left;
-      font-size: 10px; font-weight: 700;
+      font-size: 12px; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.5px;
       color: var(--text-muted); background: #f8fafc;
       border-bottom: 2px solid var(--border);
@@ -285,8 +357,8 @@
     tbody tr:hover { background: #eff6ff !important; }
     tbody td { padding: 8px 14px; vertical-align: middle; }
     .badge {
-      display: inline-block; padding: 2px 8px;
-      border-radius: 9999px; font-size: 10px; font-weight: 700;
+      display: inline-block; padding: 3px 10px;
+      border-radius: 9999px; font-size: 12px; font-weight: 700;
       letter-spacing: 0.2px; white-space: nowrap;
     }
     .b-green  { background: #dcfce7; color: #15803d; }
@@ -299,13 +371,13 @@
     .pagination {
       display: flex; align-items: center; justify-content: space-between;
       padding: 10px 18px; border-top: 1px solid var(--border);
-      font-size: 12px; color: var(--text-muted);
+      font-size: 14px; color: var(--text-muted);
       background: #fafafa; flex-wrap: wrap; gap: 8px;
     }
     .pg-controls { display: flex; gap: 4px; align-items: center; }
     .pg-btn {
-      padding: 4px 9px; border: 1px solid var(--border); border-radius: 6px;
-      background: white; cursor: pointer; font-size: 12px; color: var(--text);
+      padding: 5px 11px; border: 1px solid var(--border); border-radius: 6px;
+      background: white; cursor: pointer; font-size: 14px; color: var(--text);
       min-width: 30px; text-align: center; transition: background 0.1s;
     }
     .pg-btn:hover:not(:disabled) { background: #f1f5f9; }
@@ -318,6 +390,7 @@
     }
     @media (max-width: 1000px) {
       .main-row { grid-template-columns: 1fr; }
+      .charts-row { grid-template-columns: 1fr; }
       .charts-col { flex-direction: row; flex-wrap: wrap; }
       .charts-col .panel-card { flex: 1; min-width: 260px; }
       .kpi-grid { grid-template-columns: repeat(2, 1fr); }
@@ -327,14 +400,26 @@
       .search-box { width: 100%; }
     }
 
+    /* ── Clickable chart hint ─────────────────────────────────────────────── */
+    #chart-year, #chart-region, #chart-citytype, #chart-cri-citytype {
+      cursor: pointer;
+    }
+    .chart-click-hint {
+      font-size: 12px; color: var(--text-muted);
+      margin-top: 6px; text-align: center;
+      opacity: 0.7;
+    }
+
     /* ── Popup ────────────────────────────────────────────────────────────── */
-    .pop-title  { font-weight: 700; font-size: 14px; margin-bottom: 5px; color: #1e293b; }
-    .pop-loc    { color: #64748b; font-size: 12px; margin-bottom: 8px; }
-    .pop-table  { font-size: 12px; width: 100%; border-collapse: collapse; }
+    .leaflet-popup-content-wrapper { border-radius: 10px; }
+    .leaflet-popup-content { margin: 14px 16px; overflow-y: auto; }
+    .pop-title  { font-weight: 700; font-size: 16px; margin-bottom: 5px; color: #1e293b; }
+    .pop-loc    { color: #64748b; font-size: 14px; margin-bottom: 8px; }
+    .pop-table  { font-size: 14px; width: 100%; border-collapse: collapse; }
     .pop-table td { padding: 2px 0; }
     .pop-table td:first-child { color: #94a3b8; width: 110px; }
     .pop-table td:last-child  { font-weight: 600; text-align: right; }
-    .pop-builder { margin-top: 7px; font-size: 11px; color: #94a3b8; }
+    .pop-builder { margin-top: 7px; font-size: 13px; color: #94a3b8; }
   </style>
 </head>
 <body>
@@ -348,23 +433,45 @@
 <!-- Header -->
 <div class="header">
   <div class="header-left">
-    <h1>Minha Casa, Minha Vida &mdash; Faixa 1</h1>
-    <p>Brazil &nbsp;&middot;&nbsp; Federal Government Social Housing Programme</p>
+    <h1>MCMV Climate Resilience Tracker</h1>
+    <p>Minha Casa, Minha Vida (MCMV - My House, My Life) is a nationally subsidized affordable housing program in Brazil.</p>
   </div>
   <div class="header-right">
     <div class="header-meta">
-      Reference: 30 September 2024 &nbsp;&middot;&nbsp; Source: Ministry of Cities &nbsp;&middot;&nbsp; This dashboard is developed by <a href="https://sites.wustl.edu/peoplehealthandplaceunitstlouis/" target="_blank" rel="noopener noreferrer">WashU PHP Unit</a>
+      Reference: 30 September 2024 &nbsp;&middot;&nbsp; Source: Ministry of Cities &nbsp;&middot;&nbsp; This dashboard is developed by <a href="https://sites.wustl.edu/peoplehealthandplaceunitstlouis/" target="_blank" rel="noopener noreferrer" style="color:#ffffff;font-weight:bold;">WashU PHP Unit</a>
     </div>
     <div class="header-pills">
       <span class="pill" id="pill-projects">— Projects</span>
       <span class="pill" id="pill-states">— States</span>
       <span class="pill" id="pill-regions">— Regions</span>
+      <span class="pill" id="pill-cri">Avg MCMV CRI: —</span>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+        <span id="theme-icon">🌙</span>
+      </button>
     </div>
   </div>
 </div>
 
 <!-- Main content -->
 <div class="container" id="main-content" style="display:none">
+
+  <!-- Description -->
+  <div class="card" style="padding:18px 24px;margin-bottom:var(--gap);line-height:1.7;font-size:16px;color:var(--text)">
+    <p>
+      This dashboard visualizes <strong>Minha Casa, Minha Vida (MCMV) Faixa 1</strong> projects (2009-2019) across Brazil,
+      combining project-level data from the Ministry of Cities with a <strong>Climate Resilience Index (CRI)</strong> computed using
+      climate exposure, sociodemographic, and built environment
+      indicators. Use the filters below to explore projects by region, state, city type, financial
+      agent, and year. The map, charts, and table below update together to reveal spatial patterns of affordable housing production and
+      the climate resilience.
+    </p>
+    <p style="font-size:16px;color:var(--muted);margin-top:8px;">
+      <strong>Citation:</strong> Wang, Y., Hockman, E., Augusto de Paula da Silva, A., Favarão Leão, A. L., Franco Silva, M., Nascimento Neto, P., Florindo, A., &amp; Reis, R. (2026). Geocoded Dataset of Brazil’s Minha Casa, Minha Vida (MCMV) Faixa 1 Projects, 2009-2019 [Dataset]. Harvard Dataverse. <a href="https://doi.org/10.7910/DVN/B3HNWS" target="_blank" rel="noopener">https://doi.org/10.7910/DVN/B3HNWS</a>
+    </p>
+    <p style="font-size:16px;color:var(--muted);margin-top:4px;">
+      <strong>Funding:</strong> This work was supported by the <a href="https://global.washu.edu/global-partnerships/seed-grants/" target="_blank" rel="noopener">Global Incubator Seed Grants Program at Washington University in St. Louis</a>, the National Institute of Diabetes and Digestive and Kidney Diseases (P30DK092950), and the Foundation for Barnes-Jewish Hospital.</a>.
+    </p>
+  </div>
 
   <!-- Filter bar -->
   <div class="filter-bar">
@@ -411,34 +518,6 @@
     <button class="btn-reset" onclick="resetFilters()">Reset</button>
   </div>
 
-  <!-- KPI cards -->
-  <div class="kpi-grid">
-    <div class="kpi-card k1">
-      <div class="kpi-icon">&#9700;</div>
-      <div class="kpi-label">Total Projects</div>
-      <div class="kpi-value" id="kpi-projects">&#8212;</div>
-      <div class="kpi-sub" id="kpi-projects-sub"></div>
-    </div>
-    <div class="kpi-card k2">
-      <div class="kpi-icon">&#8962;</div>
-      <div class="kpi-label">Units Contracted</div>
-      <div class="kpi-value" id="kpi-units">&#8212;</div>
-      <div class="kpi-sub" id="kpi-units-sub"></div>
-    </div>
-    <div class="kpi-card k3">
-      <div class="kpi-icon">&#36;</div>
-      <div class="kpi-label">Total Contracted (R$)</div>
-      <div class="kpi-value" id="kpi-value">&#8212;</div>
-      <div class="kpi-sub" id="kpi-value-sub"></div>
-    </div>
-    <div class="kpi-card k4">
-      <div class="kpi-icon">&#8679;</div>
-      <div class="kpi-label">Total Disbursed (R$)</div>
-      <div class="kpi-value" id="kpi-disbursed">&#8212;</div>
-      <div class="kpi-sub" id="kpi-disbursed-sub"></div>
-    </div>
-  </div>
-
   <!-- Map + all 3 charts -->
   <div class="main-row">
     <div class="card">
@@ -457,6 +536,7 @@
           Projects &amp; Units by Year
         </div>
         <canvas id="chart-year"></canvas>
+        <div class="chart-click-hint">Click a bar to filter by year</div>
       </div>
       <div class="panel-card">
         <div class="panel-card-header">
@@ -464,6 +544,7 @@
           Units Contracted by Region
         </div>
         <canvas id="chart-region"></canvas>
+        <div class="chart-click-hint">Click a bar to filter by region</div>
       </div>
       <div class="panel-card">
         <div class="panel-card-header">
@@ -471,7 +552,45 @@
           Projects by City Type
         </div>
         <canvas id="chart-citytype"></canvas>
+        <div class="chart-click-hint">Click a bar to filter by city type</div>
       </div>
+    </div>
+  </div>
+
+  <!-- CRI Charts Row -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <div class="card-dot" style="background:#ef4444"></div>
+        MCMV CRI Score Distribution
+      </div>
+      <canvas id="chart-cri-hist"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <div class="card-dot" style="background:#f97316"></div>
+        Average MCMV CRI by City Type
+      </div>
+      <canvas id="chart-cri-citytype"></canvas>
+      <div class="chart-click-hint">Click a bar to filter by city type</div>
+    </div>
+  </div>
+
+  <!-- Climate Hazards Charts Row -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <div class="card-dot" style="background:#14b8a6"></div>
+        Average MCMV Climate Hazards by Region
+      </div>
+      <canvas id="chart-climate-region"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <div class="card-dot" style="background:#6366f1"></div>
+        Average MCMV Income vs. CRI
+      </div>
+      <canvas id="chart-income-cri"></canvas>
     </div>
   </div>
 
@@ -484,8 +603,7 @@
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <input class="search-box" type="text" id="table-search"
-          placeholder="Search project, municipality, builder…"
-          oninput="tableSearch()" />
+          placeholder="Search project, municipality, builder…" />
         <button class="btn-reset" onclick="exportCSV()" style="background:#059669" title="Download filtered data as CSV">Export CSV</button>
       </div>
     </div>
@@ -506,6 +624,8 @@
             <th onclick="sortTable('year')">Year</th>
             <th onclick="sortTable('txt_nome_agente_financeiro')">Agent</th>
             <th onclick="sortTable('_val_contracted')" style="text-align:right">Contracted (R$)</th>
+            <th onclick="sortTable('_cri')" style="text-align:right">CRI</th>
+            <th onclick="sortTable('_avg_income')" style="text-align:right">Avg Income (R$)</th>
           </tr>
         </thead>
         <tbody id="table-body"></tbody>
@@ -530,6 +650,7 @@
 
 // ─── State ────────────────────────────────────────────────────────────────────
 let allData      = [];
+let criLookup    = {};
 let filteredData = [];
 let tableData    = [];
 let sortCol = '';
@@ -538,9 +659,71 @@ let currentPage = 1;
 const PAGE_SIZE = 50;
 
 let chartYear, chartRegion, chartCitytype;
+let chartCriHist, chartCriCitytype, chartClimateRegion, chartIncomeCri;
 let leafletMap, markerCluster;
 
+// ─── Dark mode ───────────────────────────────────────────────────────────────
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('theme-icon').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('mcmv-theme', isDark ? 'light' : 'dark');
+  updateChartColors();
+}
+function initTheme() {
+  const saved = localStorage.getItem('mcmv-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('theme-icon').textContent = '☀️';
+  }
+}
+function getGridColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue('--chart-grid').trim() || '#f1f5f9';
+}
+function getTextColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#0f172a';
+}
+function getTextMutedColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() || '#64748b';
+}
+function updateChartColors() {
+  const grid = getGridColor();
+  const text = getTextColor();
+  const muted = getTextMutedColor();
+  [chartYear, chartRegion, chartCitytype, chartCriHist, chartCriCitytype, chartClimateRegion, chartIncomeCri].forEach(ch => {
+    if (!ch) return;
+    Object.values(ch.options.scales).forEach(s => {
+      if (s.grid) s.grid.color = grid;
+      if (s.ticks) s.ticks.color = muted;
+      if (s.title) s.title.color = muted;
+    });
+    if (ch.options.plugins && ch.options.plugins.legend && ch.options.plugins.legend.labels) {
+      ch.options.plugins.legend.labels.color = muted;
+    }
+    ch.update();
+  });
+}
+initTheme();
+
+// ─── Debounce utility ────────────────────────────────────────────────────────
+function debounce(fn, ms) {
+  let timer;
+  return function() {
+    clearTimeout(timer);
+    const args = arguments, ctx = this;
+    timer = setTimeout(function() { fn.apply(ctx, args); }, ms);
+  };
+}
+
 // ─── Utilities ────────────────────────────────────────────────────────────────
+// Parse numeric cell: '' → NaN (missing), '0' → 0 (real zero)
+function pNum(s) {
+  if (s == null || s === '') return NaN;
+  var v = parseFloat(s);
+  return isNaN(v) ? NaN : v;
+}
+
 // Brazilian number format: "13.830.963" or "13.809.147,96"
 function parseBRNum(s) {
   if (!s || !s.trim()) return 0;
@@ -572,53 +755,96 @@ function escHtml(s) {
     .replace(/'/g, '&#39;');
 }
 
-// ─── Load CSV ─────────────────────────────────────────────────────────────────
-fetch('mcmv_ogu_gc.csv')
-  .then(function(resp) {
-    if (!resp.ok) throw new Error('HTTP ' + resp.status + ' loading data.csv');
-    return resp.text();
-  })
-  .then(function(csvText) {
-    Papa.parse(csvText, {
-      header: true,
-      skipEmptyLines: true,
-      complete: function(results) {
-        allData = results.data;
-        allData.forEach(function(d) {
-          d._qtd_uh        = parseFloat(d.qtd_uh) || 0;
-          d._qtd_delivered = parseFloat(d.qtd_uh_entregues) || 0;
-          d._qtd_vigentes  = parseFloat(d.qtd_uh_vigentes) || 0;
-          d._val_contracted = parseBRNum(d.val_contratado_total);
-          d._val_disbursed  = parseBRNum(d.val_desembolsado);
-          d._lat = parseFloat(d.lat);
-          d._lng = parseFloat(d.lng);
-          d._year = parseInt(d.year) || 0;
+// ─── Load CSVs ────────────────────────────────────────────────────────────────
+function loadCSV(url) {
+  return fetch(url)
+    .then(function(resp) {
+      if (!resp.ok) throw new Error('HTTP ' + resp.status + ' loading ' + url);
+      return resp.text();
+    })
+    .then(function(csvText) {
+      return new Promise(function(resolve, reject) {
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          complete: function(results) { resolve(results.data); },
+          error: function(err) { reject(err); }
         });
-
-        initFilters();
-        initMap();
-        filteredData = [...allData];
-        tableData    = [...allData];
-        updateAll();
-
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-
-        function fitAll() {
-          leafletMap.invalidateSize();
-          if (markerCluster.getLayers().length > 0) {
-            leafletMap.fitBounds(markerCluster.getBounds(), { padding: [24, 24] });
-          }
-        }
-        setTimeout(fitAll, 50);
-        setTimeout(fitAll, 350);
-      },
-      error: function(err) { showError('PapaParse error: ' + err.message); }
+      });
     });
+}
+
+Promise.all([loadCSV('mcmv_ogu_gc.csv'), loadCSV('mcmv_cri.csv')])
+  .then(function(results) {
+    var projectData = results[0];
+    var criData     = results[1];
+
+    // Build CRI lookup by project id
+    criData.forEach(function(d) {
+      criLookup[d.id] = d;
+    });
+
+    // Merge CRI data into project data
+    allData = projectData;
+    allData.forEach(function(d) {
+      d._qtd_uh        = parseFloat(d.qtd_uh) || 0;
+      d._qtd_delivered = parseFloat(d.qtd_uh_entregues) || 0;
+      d._qtd_vigentes  = parseFloat(d.qtd_uh_vigentes) || 0;
+      d._val_contracted = parseBRNum(d.val_contratado_total);
+      d._val_disbursed  = parseBRNum(d.val_desembolsado);
+      d._lat = parseFloat(d.lat);
+      d._lng = parseFloat(d.lng);
+      d._year = parseInt(d.year) || 0;
+
+      // Merge CRI fields
+      // '' → NaN (missing); '0' → 0 (real value)
+      var cri = criLookup[d.id];
+      if (cri) {
+        d._cri            = pNum(cri.CRI);
+        d._avg_income     = pNum(cri.avg_income);
+        d._total_pop      = pNum(cri.total_population);
+        d._pct_bbi        = pNum(cri.pct_bbi);
+        d._pct_lit        = pNum(cri.pct_lit);
+        d._pct_pip        = pNum(cri.pct_pip);
+        d._pct_sew        = pNum(cri.pct_sew);
+        d._pct_gar        = pNum(cri.pct_gar);
+        d._pct_paved      = pNum(cri.pct_paved);
+        d._pct_bus        = pNum(cri.pct_bus);
+        d._igni           = pNum(cri.igni);
+        d._ehtd           = pNum(cri.ehtd);
+        d._eprd           = pNum(cri.eprd);
+        d._edrm           = pNum(cri.edrm);
+      } else {
+        d._cri = NaN; d._avg_income = NaN; d._total_pop = 0;
+        d._pct_bbi = NaN; d._pct_lit = NaN;
+        d._pct_pip = NaN; d._pct_sew = NaN; d._pct_gar = NaN;
+        d._pct_paved = NaN; d._pct_bus = NaN;
+        d._igni = NaN; d._ehtd = NaN; d._eprd = NaN; d._edrm = NaN;
+      }
+    });
+
+    initFilters();
+    initMap();
+    filteredData = [...allData];
+    tableData    = [...allData];
+    updateAll();
+    setupChartClickFilters();
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+
+    function fitAll() {
+      leafletMap.invalidateSize();
+      if (markerCluster.getLayers().length > 0) {
+        leafletMap.fitBounds(markerCluster.getBounds(), { padding: [24, 24] });
+      }
+    }
+    setTimeout(fitAll, 50);
+    setTimeout(fitAll, 350);
   })
   .catch(function(err) {
     showError(
-      'Could not load data.csv.<br>Make sure you are serving this file from a local server ' +
+      'Could not load CSV data.<br>Make sure you are serving this file from a local server ' +
       '(e.g. <code>python3 -m http.server</code> or VS Code Live Server).<br>' +
       'Error: ' + escHtml(err.message)
     );
@@ -734,31 +960,19 @@ function resetFilters() {
   applyFilters();
 }
 
-// ─── KPI ──────────────────────────────────────────────────────────────────────
-function updateKPIs() {
+// ─── Header pills ────────────────────────────────────────────────────────────
+function updatePills() {
   const d = filteredData;
-  const n          = d.length;
-  const units      = d.reduce((s, r) => s + r._qtd_uh, 0);
-  const delivered  = d.reduce((s, r) => s + r._qtd_delivered, 0);
-  const contracted = d.reduce((s, r) => s + r._val_contracted, 0);
-  const disbursed  = d.reduce((s, r) => s + r._val_disbursed, 0);
-  const concluded  = d.filter(r => r.txt_situacao_empreendimento === 'Concluído').length;
-
-  document.getElementById('kpi-projects').textContent     = fmtN(n);
-  document.getElementById('kpi-projects-sub').textContent = fmtN(concluded) + ' completed';
-  document.getElementById('kpi-units').textContent        = fmtN(units);
-  document.getElementById('kpi-units-sub').textContent    = 'across ' + fmtN(n) + ' projects';
-  document.getElementById('kpi-value').textContent        = fmtBRL(contracted);
-  document.getElementById('kpi-value-sub').textContent    = fmtBRLFull(contracted);
-  document.getElementById('kpi-disbursed').textContent    = fmtBRL(disbursed);
-  document.getElementById('kpi-disbursed-sub').textContent = fmtBRLFull(disbursed);
-
-  // Update header pills to reflect current filter state
+  const n = d.length;
   const states  = new Set(d.map(r => r.txt_sigla_uf).filter(Boolean));
   const regions = new Set(d.map(r => r.txt_regiao).filter(Boolean));
   document.getElementById('pill-projects').textContent = fmtN(n) + ' Projects';
   document.getElementById('pill-states').textContent   = states.size + ' States';
   document.getElementById('pill-regions').textContent  = regions.size + ' Regions';
+
+  const criVals = d.filter(r => !isNaN(r._cri));
+  const avgCri = criVals.length > 0 ? criVals.reduce((s, r) => s + r._cri, 0) / criVals.length : NaN;
+  document.getElementById('pill-cri').textContent = 'Avg CRI: ' + (isNaN(avgCri) ? '—' : avgCri.toFixed(3));
 }
 
 // ─── Map ──────────────────────────────────────────────────────────────────────
@@ -792,6 +1006,31 @@ function initMap() {
   leafletMap.addLayer(markerCluster);
 }
 
+// CRI color scale: red (0) → orange → yellow → green (1)
+function criColor(cri) {
+  if (isNaN(cri)) return '#94a3b8'; // gray for missing
+  const c = Math.max(0, Math.min(1, cri));
+  if (c < 0.33) {
+    const t = c / 0.33;
+    return lerpColor([239,68,68], [249,115,22], t);
+  } else if (c < 0.66) {
+    const t = (c - 0.33) / 0.33;
+    return lerpColor([249,115,22], [234,179,8], t);
+  } else {
+    const t = (c - 0.66) / 0.34;
+    return lerpColor([234,179,8], [34,197,94], t);
+  }
+}
+function lerpColor(a, b, t) {
+  const r = Math.round(a[0] + (b[0]-a[0])*t);
+  const g = Math.round(a[1] + (b[1]-a[1])*t);
+  const bl = Math.round(a[2] + (b[2]-a[2])*t);
+  return `rgb(${r},${g},${bl})`;
+}
+
+function fmtPct(v) { return isNaN(v) ? '—' : v.toFixed(1) + '%'; }
+function fmtDec(v, d) { return isNaN(v) ? '—' : v.toFixed(d || 2); }
+
 function updateMap() {
   markerCluster.clearLayers();
   const layers = [];
@@ -805,14 +1044,29 @@ function updateMap() {
       color: '#fff',
       weight: 1.5,
       opacity: 1,
-      fillOpacity: 0.82
+      fillOpacity: 0.85
     });
 
     const valStr  = d.val_contratado_total ? `<tr><td>Contracted</td><td>R$ ${escHtml(d.val_contratado_total)}</td></tr>` : '';
     const disbStr = d.val_desembolsado     ? `<tr><td>Disbursed</td><td>R$ ${escHtml(d.val_desembolsado)}</td></tr>`     : '';
 
+    // CRI section for popup
+    const criSection = !isNaN(d._cri) ? `
+        <tr><td colspan="2" style="padding-top:8px;font-weight:700;font-size:13px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px">Climate Resilience</td></tr>
+        <tr><td>CRI Score</td><td><span style="color:${criColor(d._cri)};font-weight:800">${fmtDec(d._cri, 3)}</span></td></tr>
+        <tr><td>Avg Income</td><td>R$ ${isNaN(d._avg_income) ? '—' : fmtN(Math.round(d._avg_income))}</td></tr>
+        <tr><td>Population</td><td>${d._total_pop > 0 ? fmtN(d._total_pop) : '—'}</td></tr>
+        <tr><td>Literacy</td><td>${fmtPct(d._pct_lit)}</td></tr>
+        <tr><td>Piped Water</td><td>${fmtPct(d._pct_pip)}</td></tr>
+        <tr><td>Sewage</td><td>${fmtPct(d._pct_sew)}</td></tr>
+        <tr><td>Wildfires/yr</td><td>${fmtDec(d._igni, 1)}</td></tr>
+        <tr><td>Extreme Heat days/yr</td><td>${fmtDec(d._ehtd, 1)}</td></tr>
+        <tr><td>Extreme Rain days/yr</td><td>${fmtDec(d._eprd, 1)}</td></tr>
+        <tr><td>Drought months/yr</td><td>${fmtDec(d._edrm, 1)}</td></tr>
+    ` : '';
+
     m.bindPopup(`
-      <div style="font-family:-apple-system,sans-serif;min-width:230px;max-width:270px">
+      <div style="font-family:-apple-system,sans-serif;min-width:250px;max-width:300px">
         <div class="pop-title">${escHtml(d.txt_nome_empreendimento)}</div>
         <div class="pop-loc">${escHtml((d.txt_nome_municipio||'').trim())}, ${escHtml(d.txt_sigla_uf)} &middot; ${escHtml(tr(d.txt_regiao))}</div>
         <table class="pop-table">
@@ -826,11 +1080,12 @@ function updateMap() {
           <tr><td>Agent</td><td>${escHtml(d.txt_nome_agente_financeiro)}</td></tr>
           ${valStr}${disbStr}
           <tr><td>Signed</td><td>${escHtml(d.dt_assinatura)}</td></tr>
+          ${criSection}
         </table>
         ${d.txt_nome_construtora_entidade ? `<div class="pop-builder">Builder: ${escHtml(d.txt_nome_construtora_entidade)}</div>` : ''}
         ${d.txt_endereco ? `<div class="pop-builder">${escHtml(d.txt_endereco)}</div>` : ''}
       </div>
-    `, { maxWidth: 300 });
+    `, { maxWidth: 360, maxHeight: 450, autoPan: true, autoPanPaddingTopLeft: [10, 10], autoPanPaddingBottomRight: [10, 10] });
 
     layers.push(m);
   });
@@ -845,6 +1100,9 @@ function updateMap() {
 }
 
 // ─── Charts ───────────────────────────────────────────────────────────────────
+// Set global Chart.js defaults for larger fonts
+Chart.defaults.font.size = 13;
+
 const C = {
   green:  '#22c55e', red: '#ef4444', blue: '#3b82f6',
   orange: '#f97316', purple: '#a855f7', teal: '#14b8a6',
@@ -903,11 +1161,11 @@ function updateCharts() {
       },
       options: {
         responsive: true,
-        plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, usePointStyle: true } } },
+        plugins: { legend: { position: 'bottom', labels: { font: { size: 13 }, usePointStyle: true } } },
         scales: {
           x:  { grid: { display: false } },
-          y:  { position: 'left',  grid: { color: '#f1f5f9' }, title: { display: true, text: 'Projects', font: { size: 10 } } },
-          y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Units', font: { size: 10 } }, ticks: { callback: v => fmtN(v) } }
+          y:  { position: 'left',  grid: { color: '#f1f5f9' }, title: { display: true, text: 'Projects', font: { size: 13 } } },
+          y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Units', font: { size: 13 } }, ticks: { callback: v => fmtN(v) } }
         }
       }
     });
@@ -973,6 +1231,160 @@ function updateCharts() {
         scales: {
           x: { grid: { color: '#f1f5f9' } },
           y: { grid: { display: false } }
+        }
+      }
+    });
+  }
+}
+
+// ─── CRI Charts ──────────────────────────────────────────────────────────────
+function updateCriCharts() {
+  const withCri = filteredData.filter(d => !isNaN(d._cri));
+
+  // ── CRI Histogram ────────────────────────────────────────────────────────
+  const bins = 20;
+  const counts = new Array(bins).fill(0);
+  withCri.forEach(d => {
+    const idx = Math.min(Math.floor(d._cri * bins), bins - 1);
+    counts[idx]++;
+  });
+  const binLabels = [];
+  for (let i = 0; i < bins; i++) {
+    binLabels.push((i / bins).toFixed(2) + '–' + ((i + 1) / bins).toFixed(2));
+  }
+  const binColors = binLabels.map((_, i) => criColor((i + 0.5) / bins));
+
+  if (chartCriHist) {
+    chartCriHist.data.datasets[0].data = counts;
+    chartCriHist.data.datasets[0].backgroundColor = binColors;
+    chartCriHist.update();
+  } else {
+    chartCriHist = new Chart(document.getElementById('chart-cri-hist'), {
+      type: 'bar',
+      data: {
+        labels: binLabels,
+        datasets: [{ label: 'Projects', data: counts, backgroundColor: binColors }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { maxRotation: 90, font: { size: 11 } } },
+          y: { grid: { color: '#f1f5f9' }, title: { display: true, text: 'Projects', font: { size: 13 } } }
+        }
+      }
+    });
+  }
+
+  // ── Avg CRI by City Type ─────────────────────────────────────────────────
+  const criByType = {}, countByType = {};
+  withCri.forEach(d => {
+    const t = tr(d.city_type || 'Unknown');
+    criByType[t]   = (criByType[t] || 0) + d._cri;
+    countByType[t] = (countByType[t] || 0) + 1;
+  });
+  const typeEntries = Object.keys(criByType).map(k => [k, criByType[k] / countByType[k]])
+    .sort((a, b) => a[1] - b[1]);
+  const typeLabels = typeEntries.map(e => e[0]);
+  const typeAvgs   = typeEntries.map(e => e[1]);
+  const typeColors = typeAvgs.map(v => criColor(v));
+
+  if (chartCriCitytype) {
+    chartCriCitytype.data.labels = typeLabels;
+    chartCriCitytype.data.datasets[0].data = typeAvgs;
+    chartCriCitytype.data.datasets[0].backgroundColor = typeColors;
+    chartCriCitytype.update();
+  } else {
+    chartCriCitytype = new Chart(document.getElementById('chart-cri-citytype'), {
+      type: 'bar',
+      data: {
+        labels: typeLabels,
+        datasets: [{ label: 'Avg CRI', data: typeAvgs, backgroundColor: typeColors }]
+      },
+      options: {
+        responsive: true,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: '#f1f5f9' }, min: 0, max: 0.5, title: { display: true, text: 'Average CRI', font: { size: 13 } } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // ── Climate Hazards by Region ────────────────────────────────────────────
+  const hazRegion = {};
+  withCri.forEach(d => {
+    const r = tr(d.txt_regiao || 'Unknown');
+    if (!hazRegion[r]) hazRegion[r] = { igni: 0, ehtd: 0, eprd: 0, edrm: 0, n: 0 };
+    const h = hazRegion[r];
+    if (!isNaN(d._igni)) h.igni += d._igni;
+    if (!isNaN(d._ehtd)) h.ehtd += d._ehtd;
+    if (!isNaN(d._eprd)) h.eprd += d._eprd;
+    if (!isNaN(d._edrm)) h.edrm += d._edrm;
+    h.n++;
+  });
+  const hazLabels = Object.keys(hazRegion).sort();
+  const mkAvg = (field) => hazLabels.map(r => hazRegion[r].n > 0 ? hazRegion[r][field] / hazRegion[r].n : 0);
+
+  const hazDS = [
+    { label: 'Wildfires/yr',       data: mkAvg('igni'), backgroundColor: C.red + 'bb' },
+    { label: 'Extreme Heat days/yr', data: mkAvg('ehtd'), backgroundColor: C.orange + 'bb' },
+    { label: 'Extreme Rain days/yr', data: mkAvg('eprd'), backgroundColor: C.blue + 'bb' },
+    { label: 'Drought months/yr',   data: mkAvg('edrm'), backgroundColor: C.purple + 'bb' }
+  ];
+
+  if (chartClimateRegion) {
+    chartClimateRegion.data.labels = hazLabels;
+    hazDS.forEach((ds, i) => { chartClimateRegion.data.datasets[i].data = ds.data; });
+    chartClimateRegion.update();
+  } else {
+    chartClimateRegion = new Chart(document.getElementById('chart-climate-region'), {
+      type: 'bar',
+      data: { labels: hazLabels, datasets: hazDS },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom', labels: { font: { size: 13 }, usePointStyle: true } } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { grid: { color: '#f1f5f9' }, title: { display: true, text: 'Average annual events', font: { size: 13 } } }
+        }
+      }
+    });
+  }
+
+  // ── Income vs CRI scatter ───────────────────────────────────────────────
+  const scatterData = withCri
+    .filter(d => !isNaN(d._avg_income) && d._avg_income > 0)
+    .map(d => ({ x: d._avg_income, y: d._cri }));
+
+  // Sample up to 2000 points for performance
+  const sampled = scatterData.length > 2000
+    ? scatterData.sort(() => Math.random() - 0.5).slice(0, 2000)
+    : scatterData;
+
+  if (chartIncomeCri) {
+    chartIncomeCri.data.datasets[0].data = sampled;
+    chartIncomeCri.update();
+  } else {
+    chartIncomeCri = new Chart(document.getElementById('chart-income-cri'), {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: 'Project',
+          data: sampled,
+          backgroundColor: sampled.map(p => criColor(p.y) ),
+          pointRadius: 3,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: '#f1f5f9' }, title: { display: true, text: 'Avg Household Income (R$)', font: { size: 13 } } },
+          y: { grid: { color: '#f1f5f9' }, title: { display: true, text: 'CRI Score', font: { size: 13 } }, min: 0 }
         }
       }
     });
@@ -1047,14 +1459,20 @@ function renderTable() {
       <td style="white-space:nowrap">${escHtml(tr(d.txt_regiao))}</td>
       <td>${statusBadge(d.txt_situacao_empreendimento)}</td>
       <td>${modalBadge(d.txt_modalidade)}</td>
-      <td style="font-size:12px;color:var(--text-muted);white-space:nowrap">${escHtml(tr(d.city_type))}</td>
+      <td style="font-size:14px;color:var(--text-muted);white-space:nowrap">${escHtml(tr(d.city_type))}</td>
       <td style="text-align:right;font-variant-numeric:tabular-nums">${fmtN(d._qtd_uh)}</td>
       <td style="text-align:right;font-variant-numeric:tabular-nums">${fmtN(d._qtd_delivered)}</td>
       <td style="text-align:right;font-variant-numeric:tabular-nums">${fmtN(d._qtd_vigentes)}</td>
       <td>${escHtml(d.year) || '—'}</td>
       <td>${escHtml(d.txt_nome_agente_financeiro) || '—'}</td>
-      <td style="text-align:right;font-variant-numeric:tabular-nums;font-size:12px">${
+      <td style="text-align:right;font-variant-numeric:tabular-nums;font-size:14px">${
         d._val_contracted > 0 ? fmtBRLFull(d._val_contracted) : '—'
+      }</td>
+      <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:${criColor(d._cri)}">${
+        isNaN(d._cri) ? '—' : d._cri.toFixed(3)
+      }</td>
+      <td style="text-align:right;font-variant-numeric:tabular-nums;font-size:14px">${
+        isNaN(d._avg_income) ? '—' : 'R$ ' + fmtN(Math.round(d._avg_income))
       }</td>
     </tr>
   `).join('');
@@ -1090,7 +1508,9 @@ function exportCSV() {
     'txt_situacao_empreendimento','txt_modalidade','city_type',
     'qtd_uh','qtd_uh_entregues','qtd_uh_vigentes','year',
     'txt_nome_agente_financeiro','val_contratado_total','val_desembolsado',
-    'txt_nome_construtora_entidade','dt_assinatura','lat','lng'
+    'txt_nome_construtora_entidade','dt_assinatura','lat','lng',
+    '_cri','_avg_income','_total_pop','_pct_lit','_pct_pip','_pct_sew',
+    '_igni','_ehtd','_eprd','_edrm'
   ];
   const escape = v => {
     const s = String(v == null ? '' : v);
@@ -1108,12 +1528,106 @@ function exportCSV() {
   document.body.removeChild(a); URL.revokeObjectURL(url);
 }
 
+// ─── Debounced search wiring ─────────────────────────────────────────────────
+document.getElementById('table-search').addEventListener('input', debounce(tableSearch, 200));
+
 // ─── Orchestrate ──────────────────────────────────────────────────────────────
 function updateAll() {
-  updateKPIs();
+  updatePills();
   updateMap();
   updateCharts();
+  updateCriCharts();
   renderTable();
+  updateFilterHighlights();
+}
+
+// ─── Filter highlight ────────────────────────────────────────────────────────
+function updateFilterHighlights() {
+  const ids = ['f-region','f-state','f-citytype','f-agent','f-year-from','f-year-to'];
+  let active = 0;
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    const group = el.closest('.filter-group');
+    if (el.value) {
+      group.classList.add('filter-active');
+      active++;
+    } else {
+      group.classList.remove('filter-active');
+    }
+  });
+  const btn = document.querySelector('.btn-reset');
+  if (active > 0) {
+    btn.innerHTML = 'Reset <span class="btn-reset-count">' + active + '</span>';
+  } else {
+    btn.textContent = 'Reset';
+  }
+}
+
+// ─── Chart click → filter ────────────────────────────────────────────────────
+// Reverse translation map for click-to-filter
+const REVERSE_TR = {};
+Object.entries(TRANSLATE).forEach(function(e) { REVERSE_TR[e[1]] = e[0]; });
+function reverseTranslate(val) { return REVERSE_TR[val] || val; }
+
+function setupChartClickFilters() {
+  // Region chart: click a bar → set region filter
+  if (chartRegion) {
+    document.getElementById('chart-region').onclick = function(evt) {
+      const points = chartRegion.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, false);
+      if (points.length > 0) {
+        const label = chartRegion.data.labels[points[0].index];
+        const original = reverseTranslate(label);
+        const sel = document.getElementById('f-region');
+        // Toggle: if already selected, clear it
+        sel.value = sel.value === original ? '' : original;
+        sel.dispatchEvent(new Event('change'));
+      }
+    };
+  }
+  // City type chart: click a bar → set city type filter
+  if (chartCitytype) {
+    document.getElementById('chart-citytype').onclick = function(evt) {
+      const points = chartCitytype.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, false);
+      if (points.length > 0) {
+        const label = chartCitytype.data.labels[points[0].index];
+        const original = reverseTranslate(label);
+        const sel = document.getElementById('f-citytype');
+        sel.value = sel.value === original ? '' : original;
+        applyFilters();
+      }
+    };
+  }
+  // Year chart: click a bar → set year range filter
+  if (chartYear) {
+    document.getElementById('chart-year').onclick = function(evt) {
+      const points = chartYear.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, false);
+      if (points.length > 0) {
+        const year = chartYear.data.labels[points[0].index];
+        const fromSel = document.getElementById('f-year-from');
+        const toSel = document.getElementById('f-year-to');
+        // Toggle: if both already set to this year, clear
+        if (fromSel.value === String(year) && toSel.value === String(year)) {
+          fromSel.value = ''; toSel.value = '';
+        } else {
+          fromSel.value = year; toSel.value = year;
+        }
+        applyFilters();
+      }
+    };
+  }
+  // CRI by City Type: click → set city type filter
+  if (chartCriCitytype) {
+    document.getElementById('chart-cri-citytype').onclick = function(evt) {
+      const points = chartCriCitytype.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, false);
+      if (points.length > 0) {
+        const label = chartCriCitytype.data.labels[points[0].index];
+        const original = reverseTranslate(label);
+        const sel = document.getElementById('f-citytype');
+        sel.value = sel.value === original ? '' : original;
+        applyFilters();
+      }
+    };
+  }
 }
 
 </script>

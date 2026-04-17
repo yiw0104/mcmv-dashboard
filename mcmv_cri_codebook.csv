@@ -1,0 +1,28 @@
+variable,label,source
+id,mcmv project id,"Ministério das Cidades - Bases de Dados do Programa Minha Casa, Minha Vida"
+cd_setor,census tract id,2022 Brazilian Census
+cod_ibge,municipality id ,2022 Brazilian Census
+cd_uf,state/federal district id,2022 Brazilian Census
+total_population,total population,2022 Brazilian Census
+avg_income,average household income (R$),2022 Brazilian Census
+pct_u20,population aged under 20 (%),2022 Brazilian Census
+pct_o60,population aged 60 and above (%),2022 Brazilian Census
+pct_wy,white or yellow population (%),2022 Brazilian Census
+pct_bbi,"black, brown, or indigenous population (%)  ",2022 Brazilian Census
+pct_lit,literacy rate (%),2022 Brazilian Census
+pct_pip,households with piped water (%),2022 Brazilian Census
+pct_sew,households with sewage collection system (%),2022 Brazilian Census
+pct_gar,households with garbage collection (%),2022 Brazilian Census
+pct_slight,households’ surroundings with at least one tree (%),2022 Brazilian Census
+pct_paved,households’ surroundings with street lighting (%),2022 Brazilian Census
+pct_tree,households’ surroundings with paved road (%),2022 Brazilian Census
+pct_drain,households’ surroundings with storm drain (%),2022 Brazilian Census
+pct_swalk,households’ surroundings with sidewalk (%),2022 Brazilian Census
+pct_whcair,households’ surroundings with wheelchair ramp (%),2022 Brazilian Census
+pct_bus,households’ surroundings with a bus stop (%),2022 Brazilian Census
+igni,"average annual number of wildfire occurrences, 2009-2023",Global Fire Atlas (2002-2024)
+ehtd,"average annual number of extreme heat days, 2009-2023",Brazilian Daily Weather Gridded Data (1961-2024)
+eprd,"average annual number of extreme precipitation days, 2009-2023",Brazilian Daily Weather Gridded Data (1961-2024)
+edrm,"average annual number of extreme drought months, 2009-2023",Integrated Drought Index (2003-2023)
+city_type,city type (metropolis/ regional capital/ sub-regional center/ zone center/ local center),REGIC - Regiões de Influência das Cidades (RREGIC2018_Cidades_v2.xlsx)
+CRI,climate resilience index,Calculated by the WashU PHP Unit
