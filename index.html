@@ -460,6 +460,15 @@
 
     /* ── Popup ────────────────────────────────────────────────────────────── */
     .leaflet-popup-content-wrapper { border-radius: 4px; }
+    /* Cluster circle overrides */
+    .marker-cluster-small        { background-color: rgba(0,0,0,0.35); }
+    .marker-cluster-small div    { background-color: rgba(0,0,0,0.65); }
+    .marker-cluster-medium       { background-color: rgba(0,0,0,0.45); }
+    .marker-cluster-medium div   { background-color: rgba(0,0,0,0.75); }
+    .marker-cluster-large        { background-color: rgba(0,0,0,0.55); }
+    .marker-cluster-large div    { background-color: rgba(0,0,0,0.85); }
+    .marker-cluster div          { color: #fff; font-weight: 700; }
+
     .leaflet-popup-content { margin: 14px 16px; overflow-y: auto; }
     .pop-title  { font-weight: 700; font-size: 15px; margin-bottom: 5px; color: #1a2f4e; }
     .pop-loc    { color: #666666; font-size: 13px; margin-bottom: 8px; }
@@ -1066,8 +1075,8 @@ function updateMap() {
 
     const m = L.circleMarker([d._lat, d._lng], {
       radius: 6,
-      fillColor: '#facc15',
-      color: '#fff',
+      fillColor: '#000000',
+      color: '#000000',
       weight: 1.5,
       opacity: 1,
       fillOpacity: 0.85
