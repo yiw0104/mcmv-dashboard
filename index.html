@@ -31,7 +31,7 @@
       --table-hover: #e8f1f8;
       --toolbar-bg: #f7f7f7;
       --input-bg: #ffffff;
-      --chart-grid: #f0f0f0;
+      --chart-grid: #D7D7D7;
     }
     [data-theme="dark"] {
       --bg: #0f172a;
@@ -256,13 +256,13 @@
       box-shadow: 0 0 0 2px rgba(52,110,173,0.15); background: white;
     }
     .btn-reset {
-      padding: 8px 20px; background: var(--primary); color: white;
+      padding: 8px 20px; background: #000000; color: #ffffff;
       border: none; border-radius: 9999px; font-size: 13px; font-weight: 700;
       font-family: inherit; cursor: pointer; white-space: nowrap; flex-shrink: 0;
       letter-spacing: 0.3px;
       transition: background 0.15s;
     }
-    .btn-reset:hover { background: var(--primary-dark); }
+    .btn-reset:hover { background: #333333; }
 
     /* ── Main row (map + charts column) ──────────────────────────────────── */
     .main-row {
@@ -335,7 +335,7 @@
     .cri-legend-title { font-weight: 700; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
     .cri-gradient {
       width: 120px; height: 10px; border-radius: 2px;
-      background: linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e);
+      background: linear-gradient(to right, #BF3927, #CC6B2E, #C9962A, #5A8C51);
     }
     .cri-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
@@ -484,7 +484,7 @@
 <!-- Header -->
 <div class="header">
   <div class="header-left">
-    <h1>MCMV Climate Resilience Tracker</h1>
+    <h1></h1>
     <p>Minha Casa, Minha Vida (MCMV - My House, My Life) is a nationally subsidized affordable housing program in Brazil.</p>
   </div>
   <div class="header-right">
@@ -500,7 +500,7 @@
   <!-- Description -->
   <div class="desc-card">
     <p>
-      This dashboard, developed by <a href="https://sites.wustl.edu/peoplehealthandplaceunitstlouis/" target="_blank" rel="noopener noreferrer">WashU PHP Unit</a>, visualizes <strong>MCMV Faixa 1 projects (2009-2019)</strong> across Brazil,
+      This dashboard MCMV Faixa 1 projects (2009-2019)</strong> across Brazil,
       combining project-level data from the Ministry of Cities with a <strong>Climate Resilience Index (CRI)</strong> computed using
       climate exposure, sociodemographic, and built environment
       indicators. Use the filters below to explore projects by region, state, city type, financial
@@ -638,7 +638,7 @@
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <input class="search-box" type="text" id="table-search"
           placeholder="Search project, municipality, builder…" />
-        <button class="btn-reset" onclick="exportCSV()" style="background:#2a7a4b" title="Download filtered data as CSV">Export CSV</button>
+        <button class="btn-reset" onclick="exportCSV()" title="Download filtered data as CSV">Export CSV</button>
       </div>
     </div>
     <div class="tbl-wrap">
@@ -649,15 +649,9 @@
             <th onclick="sortTable('txt_nome_municipio')">Municipality</th>
             <th onclick="sortTable('txt_sigla_uf')">UF</th>
             <th onclick="sortTable('txt_regiao')">Region</th>
-            <th onclick="sortTable('txt_modalidade')">Modality</th>
             <th onclick="sortTable('city_type')">City Type</th>
             <th onclick="sortTable('_qtd_uh')" style="text-align:right">Units</th>
-            <th onclick="sortTable('_qtd_delivered')" style="text-align:right">Delivered</th>
-            <th onclick="sortTable('year')">Year</th>
-            <th onclick="sortTable('txt_nome_agente_financeiro')">Agent</th>
-            <th onclick="sortTable('_val_contracted')" style="text-align:right">Contracted (R$)</th>
             <th onclick="sortTable('_cri')" style="text-align:right">CRI</th>
-            <th onclick="sortTable('_avg_income')" style="text-align:right">Avg Income (R$)</th>
           </tr>
         </thead>
         <tbody id="table-body"></tbody>
@@ -1038,19 +1032,19 @@ function initMap() {
   leafletMap.addLayer(markerCluster);
 }
 
-// CRI color scale: red (0) → orange → yellow → green (1)
+// CRI color scale: Pew red (0) → Pew orange → Pew yellow → Pew green (0.5, normalized to full range)
+const CRI_MAX = 0.5; // observed ceiling of CRI scores
+// Pew palette stops: #BF3927 → #CC6B2E → #C9962A → #5A8C51
+const CRI_STOPS = [[191,57,39],[204,107,46],[201,150,42],[90,140,81]];
 function criColor(cri) {
-  if (isNaN(cri)) return '#94a3b8'; // gray for missing
-  const c = Math.max(0, Math.min(1, cri));
+  if (isNaN(cri)) return '#A4A4A4'; // Pew gray for missing
+  const c = Math.max(0, Math.min(1, cri / CRI_MAX)); // normalize to [0,1]
   if (c < 0.33) {
-    const t = c / 0.33;
-    return lerpColor([239,68,68], [249,115,22], t);
+    return lerpColor(CRI_STOPS[0], CRI_STOPS[1], c / 0.33);
   } else if (c < 0.66) {
-    const t = (c - 0.33) / 0.33;
-    return lerpColor([249,115,22], [234,179,8], t);
+    return lerpColor(CRI_STOPS[1], CRI_STOPS[2], (c - 0.33) / 0.33);
   } else {
-    const t = (c - 0.66) / 0.34;
-    return lerpColor([234,179,8], [34,197,94], t);
+    return lerpColor(CRI_STOPS[2], CRI_STOPS[3], (c - 0.66) / 0.34);
   }
 }
 function lerpColor(a, b, t) {
@@ -1135,11 +1129,21 @@ function updateMap() {
 // Set global Chart.js defaults for larger fonts
 Chart.defaults.font.size = 13;
 
+// Pew Research-inspired palette (muted, professional)
+// Confirmed Pew colors: #436983 (blue), #BF3927 (red), #A4A4A4 (gray), #D7D7D7 (grid)
 const C = {
-  green:  '#22c55e', red: '#ef4444', blue: '#3b82f6',
-  orange: '#f97316', purple: '#a855f7', teal: '#14b8a6',
-  pink:   '#ec4899', yellow: '#eab308', indigo: '#6366f1',
-  slate:  '#64748b', cyan: '#06b6d4', lime: '#84cc16'
+  blue:   '#436983',
+  red:    '#BF3927',
+  orange: '#CC6B2E',
+  green:  '#5A8C51',
+  purple: '#7B6FAE',
+  teal:   '#3D7A8A',
+  pink:   '#B05A7A',
+  yellow: '#C9962A',
+  indigo: '#4A5E82',
+  slate:  '#A4A4A4',
+  cyan:   '#3A8094',
+  lime:   '#6A9055'
 };
 const PALETTE = Object.values(C);
 
@@ -1175,7 +1179,7 @@ function updateCharts() {
           {
             label: 'Projects',
             data: yearsSet.map(y => projByYear[y] || 0),
-            backgroundColor: C.blue + 'bb',
+            backgroundColor: C.blue + 'cc',
             yAxisID: 'y'
           },
           {
@@ -1196,7 +1200,7 @@ function updateCharts() {
         plugins: { legend: { position: 'bottom', labels: { font: { size: 13 }, usePointStyle: true } } },
         scales: {
           x:  { grid: { display: false } },
-          y:  { position: 'left',  grid: { color: '#f0f0f0' }, title: { display: true, text: 'Projects', font: { size: 13 } } },
+          y:  { position: 'left',  grid: { color: '#D7D7D7' }, title: { display: true, text: 'Projects', font: { size: 13 } } },
           y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Units', font: { size: 13 } }, ticks: { callback: v => fmtN(v) } }
         }
       }
@@ -1221,7 +1225,7 @@ function updateCharts() {
       data: {
         labels: regions.map(r => tr(r)),
         datasets: [
-          { label: 'Units Contracted', data: regions.map(r => contracted[r] || 0), backgroundColor: C.blue + 'bb' }
+          { label: 'Units Contracted', data: regions.map(r => contracted[r] || 0), backgroundColor: C.blue + 'cc' }
         ]
       },
       options: {
@@ -1229,7 +1233,7 @@ function updateCharts() {
         indexAxis: 'y',
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { color: '#f0f0f0' }, ticks: { callback: v => fmtN(v) } },
+          x: { grid: { color: '#D7D7D7' }, ticks: { callback: v => fmtN(v) } },
           y: { grid: { display: false } }
         }
       }
@@ -1261,7 +1265,7 @@ function updateCharts() {
         indexAxis: 'y',
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { color: '#f0f0f0' } },
+          x: { grid: { color: '#D7D7D7' } },
           y: { grid: { display: false } }
         }
       }
@@ -1277,14 +1281,16 @@ function updateCriCharts() {
   const bins = 20;
   const counts = new Array(bins).fill(0);
   withCri.forEach(d => {
-    const idx = Math.min(Math.floor(d._cri * bins), bins - 1);
+    const idx = Math.min(Math.floor((d._cri / CRI_MAX) * bins), bins - 1);
     counts[idx]++;
   });
   const binLabels = [];
   for (let i = 0; i < bins; i++) {
-    binLabels.push((i / bins).toFixed(2) + '–' + ((i + 1) / bins).toFixed(2));
+    const lo = (i / bins * CRI_MAX).toFixed(2);
+    const hi = ((i + 1) / bins * CRI_MAX).toFixed(2);
+    binLabels.push(lo + '–' + hi);
   }
-  const binColors = binLabels.map((_, i) => criColor((i + 0.5) / bins));
+  const binColors = binLabels.map((_, i) => criColor((i + 0.5) / bins * CRI_MAX));
 
   if (chartCriHist) {
     chartCriHist.data.datasets[0].data = counts;
@@ -1302,7 +1308,7 @@ function updateCriCharts() {
         plugins: { legend: { display: false } },
         scales: {
           x: { grid: { display: false }, ticks: { maxRotation: 90, font: { size: 11 } } },
-          y: { grid: { color: '#f0f0f0' }, title: { display: true, text: 'Projects', font: { size: 13 } } }
+          y: { grid: { color: '#D7D7D7' }, title: { display: true, text: 'Projects', font: { size: 13 } } }
         }
       }
     });
@@ -1338,7 +1344,7 @@ function updateCriCharts() {
         indexAxis: 'y',
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { color: '#f1f5f9' }, min: 0, max: 0.5, title: { display: true, text: 'Average CRI', font: { size: 13 } } },
+          x: { grid: { color: '#D7D7D7' }, min: 0, max: 0.5, title: { display: true, text: 'Average CRI', font: { size: 13 } } },
           y: { grid: { display: false } }
         }
       }
@@ -1361,10 +1367,10 @@ function updateCriCharts() {
   const mkAvg = (field) => hazLabels.map(r => hazRegion[r].n > 0 ? hazRegion[r][field] / hazRegion[r].n : 0);
 
   const hazDS = [
-    { label: 'Wildfires/yr',       data: mkAvg('igni'), backgroundColor: C.red + 'bb' },
-    { label: 'Extreme Heat days/yr', data: mkAvg('ehtd'), backgroundColor: C.orange + 'bb' },
-    { label: 'Extreme Rain days/yr', data: mkAvg('eprd'), backgroundColor: C.blue + 'bb' },
-    { label: 'Drought months/yr',   data: mkAvg('edrm'), backgroundColor: C.purple + 'bb' }
+    { label: 'Wildfires/yr',         data: mkAvg('igni'), backgroundColor: C.red    + 'cc' },
+    { label: 'Extreme Heat days/yr', data: mkAvg('ehtd'), backgroundColor: C.orange + 'cc' },
+    { label: 'Extreme Rain days/yr', data: mkAvg('eprd'), backgroundColor: C.blue   + 'cc' },
+    { label: 'Drought months/yr',    data: mkAvg('edrm'), backgroundColor: C.purple + 'cc' }
   ];
 
   if (chartClimateRegion) {
@@ -1380,7 +1386,7 @@ function updateCriCharts() {
         plugins: { legend: { position: 'bottom', labels: { font: { size: 13 }, usePointStyle: true } } },
         scales: {
           x: { grid: { display: false } },
-          y: { grid: { color: '#f0f0f0' }, title: { display: true, text: 'Average annual events', font: { size: 13 } } }
+          y: { grid: { color: '#D7D7D7' }, title: { display: true, text: 'Average annual events', font: { size: 13 } } }
         }
       }
     });
@@ -1415,8 +1421,8 @@ function updateCriCharts() {
         responsive: true,
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { color: '#f1f5f9' }, title: { display: true, text: 'Avg Household Income (R$)', font: { size: 13 } } },
-          y: { grid: { color: '#f0f0f0' }, title: { display: true, text: 'CRI Score', font: { size: 13 } }, min: 0 }
+          x: { grid: { color: '#D7D7D7' }, title: { display: true, text: 'Avg Household Income (R$)', font: { size: 13 } } },
+          y: { grid: { color: '#D7D7D7' }, title: { display: true, text: 'CRI Score', font: { size: 13 } }, min: 0 }
         }
       }
     });
@@ -1489,20 +1495,10 @@ function renderTable() {
       <td style="white-space:nowrap">${escHtml((d.txt_nome_municipio || '').trim())}</td>
       <td><strong>${escHtml(d.txt_sigla_uf) || '—'}</strong></td>
       <td style="white-space:nowrap">${escHtml(tr(d.txt_regiao))}</td>
-      <td>${modalBadge(d.txt_modalidade)}</td>
       <td style="font-size:14px;color:var(--text-muted);white-space:nowrap">${escHtml(tr(d.city_type))}</td>
       <td style="text-align:right;font-variant-numeric:tabular-nums">${fmtN(d._qtd_uh)}</td>
-      <td style="text-align:right;font-variant-numeric:tabular-nums">${fmtN(d._qtd_delivered)}</td>
-      <td>${escHtml(d.year) || '—'}</td>
-      <td>${escHtml(d.txt_nome_agente_financeiro) || '—'}</td>
-      <td style="text-align:right;font-variant-numeric:tabular-nums;font-size:14px">${
-        d._val_contracted > 0 ? fmtBRLFull(d._val_contracted) : '—'
-      }</td>
       <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:${criColor(d._cri)}">${
         isNaN(d._cri) ? '—' : d._cri.toFixed(3)
-      }</td>
-      <td style="text-align:right;font-variant-numeric:tabular-nums;font-size:14px">${
-        isNaN(d._avg_income) ? '—' : 'R$ ' + fmtN(Math.round(d._avg_income))
       }</td>
     </tr>
   `).join('');
